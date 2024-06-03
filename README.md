@@ -6,5 +6,5 @@ learning react and practicing projects...
 
 Instructor : Jonas Schmedtmann (Web developer, designer and teacher)
 
-In all these projects only logical part/ javascript part is implemented, rest
+In all these projects only logical part/ javascript and react part is implemented, rest
 of the application is taken prebuild from the above mentioned source.
