@@ -1,1 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+}
 
+body {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(248, 1, 248),
+    pink,
+    violet,
+    purple
+  );
+  background-repeat: no-repeat;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  width: 100%;
+  margin: 0;
+}
+
+h1 {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  color: rgb(6, 6, 185);
+  font-style: oblique;
+  font-size: 80px;
+}
+
+section {
+  height: 140px;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 20px;
+}
+
+section h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40px;
+  padding: 20px;
+  color: rgb(11, 11, 228);
+}
+
+.dateTimeBox {
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dateTimeBox span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: rgb(88, 5, 124);
+  margin-right: 10px;
+}
+
+.dateTimeBox input {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  color: rgb(88, 5, 124);
+  border: none;
+  border-radius: 2px;
+  padding: 5px;
+  padding-left: 10px;
+  background-color: rgba(239, 182, 248, 0.781);
+}
+
+.dateTimeBox input::placeholder {
+  color: rgb(88, 5, 124);
+}
+
+section p {
+  font-family: cursive;
+  font-size: 12px;
+  color: rgb(115, 20, 159);
+}
+
+main {
+  height: 365px;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.countDownContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.countBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  padding: 10px;
+  gap: 10px;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  width: 120px;
+  background-color: rgba(243, 218, 218, 0.7);
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(111, 6, 160);
+}
+
+.countBox p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: rgb(135, 17, 190);
+}
+
+.btn-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  gap: 40px;
+}
+
+.btn {
+  background-color: rgb(253, 208, 216);
+  border: none;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  color: rgb(164, 4, 164);
+  font-size: 25px;
+  cursor: pointer;
+}
