@@ -7,13 +7,27 @@ export default function App() {
     setItemsArr((items) => [...items, newItem]);
   }
 
-  console.log(itemsArr);
+  function handleTogglePacked(id) {
+    setItemsArr((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
+  function handleRemoveItem(id) {
+    setItemsArr((items) => items.filter((item) => item.id !== id));
+  }
 
   return (
     <div className="app">
       <Logo />
       <Form onSetNewItem={handleSetnewItem} />
-      <PackingList />
+      <PackingList
+        itemsArr={itemsArr}
+        onTogglePacked={handleTogglePacked}
+        onRemoveItem={handleRemoveItem}
+      />
       <Stats />
     </div>
   );
@@ -67,10 +81,19 @@ function Form({ onSetNewItem }) {
   );
 }
 
-function PackingList() {
+function PackingList({ itemsArr, onTogglePacked, onRemoveItem }) {
   return (
     <div className="list">
-      <ul></ul>
+      <ul>
+        {itemsArr.map((item) => (
+          <Item
+            itemObj={item}
+            key={item.id}
+            onTogglePacked={onTogglePacked}
+            onRemoveItem={onRemoveItem}
+          />
+        ))}
+      </ul>
       <div className="actions">
         <select>
           <option value="input">Sort by input</option>
@@ -80,6 +103,22 @@ function PackingList() {
         <button>Clear List</button>
       </div>
     </div>
+  );
+}
+
+function Item({ itemObj, onTogglePacked, onRemoveItem }) {
+  return (
+    <li>
+      <input
+        type="checkbox"
+        value={itemObj.packed}
+        onChange={onTogglePacked(itemObj.id)}
+      />
+      <span style={itemObj.packed ? { textDecoration: "line-through" } : {}}>
+        {itemObj.quantity} {itemObj.discription}
+      </span>
+      <button onClick={onRemoveItem(itemObj.id)}>❌</button>
+    </li>
   );
 }
 
