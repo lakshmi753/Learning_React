@@ -19,6 +19,18 @@ export default function App() {
     setItemsArr((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleClearingList() {
+    if (itemsArr.length === 0) return;
+
+    const confirmed = window.confirm(
+      "Do you really want to clear your packing list 😯"
+    );
+
+    if (confirmed) {
+      setItemsArr([]);
+    }
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -27,8 +39,9 @@ export default function App() {
         itemsArr={itemsArr}
         onTogglePacked={handleTogglePacked}
         onRemoveItem={handleRemoveItem}
+        onClearingList={handleClearingList}
       />
-      <Stats />
+      <Stats itemsArr={itemsArr} />
     </div>
   );
 }
@@ -81,11 +94,35 @@ function Form({ onSetNewItem }) {
   );
 }
 
-function PackingList({ itemsArr, onTogglePacked, onRemoveItem }) {
+function PackingList({
+  itemsArr,
+  onTogglePacked,
+  onRemoveItem,
+  onClearingList,
+}) {
+  const [sortBy, setSortBy] = useState("input");
+  let sortedArr;
+
+  if (sortBy === "input") {
+    sortedArr = itemsArr;
+  }
+
+  if (sortBy === "discription") {
+    sortedArr = itemsArr
+      .slice()
+      .sort((a, b) => a.discription.localeCompare(b.discription));
+  }
+
+  if (sortBy === "packed") {
+    sortedArr = itemsArr
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
+  }
+
   return (
     <div className="list">
       <ul>
-        {itemsArr.map((item) => (
+        {sortedArr.map((item) => (
           <Item
             itemObj={item}
             key={item.id}
@@ -95,12 +132,12 @@ function PackingList({ itemsArr, onTogglePacked, onRemoveItem }) {
         ))}
       </ul>
       <div className="actions">
-        <select>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="input">Sort by input</option>
           <option value="discription">Sort by discription</option>
           <option value="packed">Sort by packed status</option>
         </select>
-        <button>Clear List</button>
+        <button onClick={onClearingList}>Clear List</button>
       </div>
     </div>
   );
@@ -112,22 +149,39 @@ function Item({ itemObj, onTogglePacked, onRemoveItem }) {
       <input
         type="checkbox"
         value={itemObj.packed}
-        onChange={onTogglePacked(itemObj.id)}
+        onChange={() => onTogglePacked(itemObj.id)}
       />
       <span style={itemObj.packed ? { textDecoration: "line-through" } : {}}>
         {itemObj.quantity} {itemObj.discription}
       </span>
-      <button onClick={onRemoveItem(itemObj.id)}>❌</button>
+      <button onClick={() => onRemoveItem(itemObj.id)}>❌</button>
     </li>
   );
 }
 
-function Stats() {
+function Stats({ itemsArr }) {
+  if (itemsArr.length === 0) {
+    return (
+      <footer className="stats">
+        <em>Start adding some items to your packing list 😉</em>
+      </footer>
+    );
+  }
+
+  const totalItems = itemsArr.length;
+  const packedItems = itemsArr.filter((items) => items.packed).length;
+  const percentage = Math.round((packedItems / totalItems) * 100);
+
   return (
     <footer className="stats">
-      <em>
-        🎒 You have X items in your list and you already have packed Y (y%) 🙂
-      </em>
+      {percentage === 100 ? (
+        <em>👍 You have packed everything, ready to go 🛩️</em>
+      ) : (
+        <em>
+          🎒 You have {totalItems} items in your list and you already have
+          packed {packedItems} items ({percentage}%) 🙂
+        </em>
+      )}
     </footer>
   );
 }
