@@ -28,7 +28,7 @@ export default function App() {
         onTogglePacked={handleTogglePacked}
         onRemoveItem={handleRemoveItem}
       />
-      <Stats />
+      <Stats itemsArr={itemsArr} />
     </div>
   );
 }
@@ -112,22 +112,39 @@ function Item({ itemObj, onTogglePacked, onRemoveItem }) {
       <input
         type="checkbox"
         value={itemObj.packed}
-        onChange={onTogglePacked(itemObj.id)}
+        onChange={() => onTogglePacked(itemObj.id)}
       />
       <span style={itemObj.packed ? { textDecoration: "line-through" } : {}}>
         {itemObj.quantity} {itemObj.discription}
       </span>
-      <button onClick={onRemoveItem(itemObj.id)}>❌</button>
+      <button onClick={() => onRemoveItem(itemObj.id)}>❌</button>
     </li>
   );
 }
 
-function Stats() {
+function Stats({ itemsArr }) {
+  if (itemsArr.length === 0) {
+    return (
+      <footer className="stats">
+        <em>Start adding some items to your packing list 😉</em>
+      </footer>
+    );
+  }
+
+  const totalItems = itemsArr.length;
+  const packedItems = itemsArr.filter((items) => items.packed).length;
+  const percentage = Math.round((packedItems / totalItems) * 100);
+
   return (
     <footer className="stats">
-      <em>
-        🎒 You have X items in your list and you already have packed Y (y%) 🙂
-      </em>
+      {percentage === 100 ? (
+        <em>👍 You have packed everything, ready to go 🛩️</em>
+      ) : (
+        <em>
+          🎒 You have {totalItems} items in your list and you already have
+          packed {packedItems} items ({percentage}%) 🙂
+        </em>
+      )}
     </footer>
   );
 }
