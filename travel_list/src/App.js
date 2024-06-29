@@ -19,6 +19,18 @@ export default function App() {
     setItemsArr((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleClearingList() {
+    if (itemsArr.length === 0) return;
+
+    const confirmed = window.confirm(
+      "Do you really want to clear your packing list 😯"
+    );
+
+    if (confirmed) {
+      setItemsArr([]);
+    }
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -27,6 +39,7 @@ export default function App() {
         itemsArr={itemsArr}
         onTogglePacked={handleTogglePacked}
         onRemoveItem={handleRemoveItem}
+        onClearingList={handleClearingList}
       />
       <Stats itemsArr={itemsArr} />
     </div>
@@ -81,7 +94,12 @@ function Form({ onSetNewItem }) {
   );
 }
 
-function PackingList({ itemsArr, onTogglePacked, onRemoveItem }) {
+function PackingList({
+  itemsArr,
+  onTogglePacked,
+  onRemoveItem,
+  onClearingList,
+}) {
   const [sortBy, setSortBy] = useState("input");
   let sortedArr;
 
@@ -119,7 +137,7 @@ function PackingList({ itemsArr, onTogglePacked, onRemoveItem }) {
           <option value="discription">Sort by discription</option>
           <option value="packed">Sort by packed status</option>
         </select>
-        <button>Clear List</button>
+        <button onClick={onClearingList}>Clear List</button>
       </div>
     </div>
   );
