@@ -23,12 +23,24 @@ const initialFriends = [
 
 export default function App() {
   const [friends, setFriends] = useState(initialFriends);
+  const [isOpenFormAdd, setIsOpenFormAdd] = useState(false);
+
+  function handleOpenFormAdd() {
+    setIsOpenFormAdd((isOpen) => !isOpen);
+  }
+
+  function handleAddFrnd(newFrnd) {
+    setFriends((frnd) => [...frnd, newFrnd]);
+  }
 
   return (
     <div className="app">
       <div className="sidebar">
         <FriendList friends={friends} />
-        <Button>Add Friend</Button>
+        {isOpenFormAdd && <FormAddFriend onAddFrnd={handleAddFrnd} />}
+        <Button onBtnClick={handleOpenFormAdd}>
+          {isOpenFormAdd ? "Close" : "Add Friend"}
+        </Button>
       </div>
       <FormSplit />
     </div>
@@ -70,8 +82,55 @@ function Friend({ frndObj }) {
   );
 }
 
-function Button({ children }) {
-  return <button className="button">{children}</button>;
+function FormAddFriend({ onAddFrnd }) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("https://i.pravatar.cc/48");
+
+  function handleAddNewFrnd(e) {
+    e.preventDefault();
+
+    const id = crypto.randomUUID();
+
+    const newFrnd = {
+      id,
+      name,
+      image: `${image}?=${id}`,
+      balance: 0,
+    };
+
+    onAddFrnd(newFrnd);
+
+    setName("");
+    setImage("https://i.pravatar.cc/48");
+  }
+
+  return (
+    <form className="form-add-friend" onSubmit={handleAddNewFrnd}>
+      <label>🙋 Frnd name</label>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <label>👨‍💼 Image Url</label>
+      <input
+        type="text"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
+      />
+
+      <Button>Add</Button>
+    </form>
+  );
+}
+
+function Button({ children, onBtnClick }) {
+  return (
+    <button className="button" onClick={onBtnClick}>
+      {children}
+    </button>
+  );
 }
 
 function FormSplit() {
