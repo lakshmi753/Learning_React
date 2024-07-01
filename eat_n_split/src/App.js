@@ -29,11 +29,15 @@ export default function App() {
     setIsOpenFormAdd((isOpen) => !isOpen);
   }
 
+  function handleAddFrnd(newFrnd) {
+    setFriends((frnd) => [...frnd, newFrnd]);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
         <FriendList friends={friends} />
-        {isOpenFormAdd && <FormAddFriend />}
+        {isOpenFormAdd && <FormAddFriend onAddFrnd={handleAddFrnd} />}
         <Button onBtnClick={handleOpenFormAdd}>
           {isOpenFormAdd ? "Close" : "Add Friend"}
         </Button>
@@ -78,14 +82,43 @@ function Friend({ frndObj }) {
   );
 }
 
-function FormAddFriend() {
+function FormAddFriend({ onAddFrnd }) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("https://i.pravatar.cc/48");
+
+  function handleAddNewFrnd(e) {
+    e.preventDefault();
+
+    const id = crypto.randomUUID();
+
+    const newFrnd = {
+      id,
+      name,
+      image: `${image}?=${id}`,
+      balance: 0,
+    };
+
+    onAddFrnd(newFrnd);
+
+    setName("");
+    setImage("https://i.pravatar.cc/48");
+  }
+
   return (
-    <form className="form-add-friend">
+    <form className="form-add-friend" onSubmit={handleAddNewFrnd}>
       <label>🙋 Frnd name</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
       <label>👨‍💼 Image Url</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
+      />
 
       <Button>Add</Button>
     </form>
