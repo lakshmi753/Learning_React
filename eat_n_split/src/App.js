@@ -23,12 +23,20 @@ const initialFriends = [
 
 export default function App() {
   const [friends, setFriends] = useState(initialFriends);
+  const [isOpenFormAdd, setIsOpenFormAdd] = useState(false);
+
+  function handleOpenFormAdd() {
+    setIsOpenFormAdd((isOpen) => !isOpen);
+  }
 
   return (
     <div className="app">
       <div className="sidebar">
         <FriendList friends={friends} />
-        <Button>Add Friend</Button>
+        {isOpenFormAdd && <FormAddFriend />}
+        <Button onBtnClick={handleOpenFormAdd}>
+          {isOpenFormAdd ? "Close" : "Add Friend"}
+        </Button>
       </div>
       <FormSplit />
     </div>
@@ -70,8 +78,26 @@ function Friend({ frndObj }) {
   );
 }
 
-function Button({ children }) {
-  return <button className="button">{children}</button>;
+function FormAddFriend() {
+  return (
+    <form className="form-add-friend">
+      <label>🙋 Frnd name</label>
+      <input type="text" />
+
+      <label>👨‍💼 Image Url</label>
+      <input type="text" />
+
+      <Button>Add</Button>
+    </form>
+  );
+}
+
+function Button({ children, onBtnClick }) {
+  return (
+    <button className="button" onClick={onBtnClick}>
+      {children}
+    </button>
+  );
 }
 
 function FormSplit() {
