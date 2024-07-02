@@ -28,6 +28,8 @@ export default function App() {
 
   function handleOpenFormAdd() {
     setIsOpenFormAdd((isOpen) => !isOpen);
+
+    setSelectedFrnd(null);
   }
 
   function handleAddFrnd(newFrnd) {
@@ -36,6 +38,20 @@ export default function App() {
 
   function handleSelectedFrnd(frndObj) {
     setSelectedFrnd((frnd) => (frnd?.id !== frndObj.id ? frndObj : null));
+
+    setIsOpenFormAdd(false);
+  }
+
+  function handleSplitBillWithFrnd(value) {
+    setFriends((frnds) =>
+      frnds.map((frnd) =>
+        frnd.id === selectedFrnd.id
+          ? { ...frnd, balance: frnd.balance + value }
+          : frnd
+      )
+    );
+
+    setSelectedFrnd(null);
   }
 
   return (
@@ -51,7 +67,12 @@ export default function App() {
           {isOpenFormAdd ? "Close" : "Add Friend"}
         </Button>
       </div>
-      {selectedFrnd && <FormSplit selectedFrnd={selectedFrnd} />}
+      {selectedFrnd && (
+        <FormSplit
+          selectedFrnd={selectedFrnd}
+          onSplitBill={handleSplitBillWithFrnd}
+        />
+      )}
     </div>
   );
 }
@@ -151,15 +172,23 @@ function Button({ children, onBtnClick }) {
   );
 }
 
-function FormSplit({ selectedFrnd }) {
+function FormSplit({ selectedFrnd, onSplitBill }) {
   const [totalBill, setTotalBill] = useState("");
   const [userBill, setUserBill] = useState("");
   const [paidBy, setPaidBy] = useState("user");
 
   const frndBill = totalBill - userBill;
 
+  function handleSplitBill(e) {
+    e.preventDefault();
+
+    const value = paidBy === "user" ? frndBill : -userBill;
+
+    onSplitBill(value);
+  }
+
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleSplitBill}>
       <h2>Split the bill with {selectedFrnd.name}</h2>
 
       <label>💰 Bill value</label>
