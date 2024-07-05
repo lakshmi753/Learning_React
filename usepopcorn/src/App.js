@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -47,6 +47,8 @@ const tempWatchedData = [
   },
 ];
 
+const KEY = "2abe7ae3";
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -56,6 +58,40 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(
+    function () {
+      async function getMovieData() {
+        setIsLoading(true);
+        try {
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+
+          if (!res.ok) {
+            throw new Error("Failed to fetch!");
+          }
+
+          const data = await res.json();
+
+          if (data.Response === "False") {
+            throw new Error("Movie not found!");
+          }
+
+          //console.log(data);
+          setMovies(data.Search);
+        } catch (error) {
+          console.log(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      getMovieData();
+    },
+    [query]
+  );
 
   return (
     <>
@@ -70,6 +106,7 @@ export default function App() {
           isOpen1={isOpen1}
           setIsOpen1={setIsOpen1}
           movies={movies}
+          isLoading={isLoading}
         />
         <WatchedMovieListBox
           watched={watched}
@@ -105,7 +142,7 @@ function SearchInput({ query, setQuery }) {
 function SearchResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies.length > 0 ? movies.length : 0}</strong> results
     </p>
   );
 }
@@ -118,16 +155,24 @@ function Button({ isOpen, setIsOpen }) {
   );
 }
 
-function MoviesListBox({ isOpen1, setIsOpen1, movies }) {
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+function MoviesListBox({ isOpen1, setIsOpen1, movies, isLoading }) {
   return (
     <div className="box">
       <Button isOpen={isOpen1} setIsOpen={setIsOpen1} />
-      {isOpen1 && (
-        <ul className="list">
-          {movies?.map((movie) => (
-            <MoviesList movieObj={movie} key={movie.imdbID} />
-          ))}
-        </ul>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        isOpen1 && (
+          <ul className="list">
+            {movies?.map((movie) => (
+              <MoviesList movieObj={movie} key={movie.imdbID} />
+            ))}
+          </ul>
+        )
       )}
     </div>
   );
