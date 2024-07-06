@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const tempMovieData = [
+/*const tempMovieData = [
   {
     imdbID: "tt1375666",
     Title: "Inception",
@@ -22,9 +22,9 @@ const tempMovieData = [
     Poster:
       "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
   },
-];
+];*/
 
-const tempWatchedData = [
+/*const tempWatchedData = [
   {
     imdbID: "tt1375666",
     Title: "Inception",
@@ -45,17 +45,56 @@ const tempWatchedData = [
     imdbRating: 8.5,
     userRating: 9,
   },
-];
+];*/
+
+const KEY = "2abe7ae3";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(
+    function () {
+      async function getMovieData() {
+        setIsLoading(true);
+        setError("");
+        try {
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+
+          if (!res.ok) {
+            throw new Error("Failed to fetch!");
+          }
+
+          const data = await res.json();
+
+          if (data.Response === "False") {
+            throw new Error("Movie not found!");
+          }
+
+          //console.log(data);
+          setMovies(data.Search);
+        } catch (error) {
+          //console.log(error.message);
+          setError(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      getMovieData();
+    },
+    [query]
+  );
 
   return (
     <>
@@ -70,6 +109,8 @@ export default function App() {
           isOpen1={isOpen1}
           setIsOpen1={setIsOpen1}
           movies={movies}
+          isLoading={isLoading}
+          error={error}
         />
         <WatchedMovieListBox
           watched={watched}
@@ -105,7 +146,7 @@ function SearchInput({ query, setQuery }) {
 function SearchResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies.length > 0 ? movies.length : 0}</strong> results
     </p>
   );
 }
@@ -118,16 +159,35 @@ function Button({ isOpen, setIsOpen }) {
   );
 }
 
-function MoviesListBox({ isOpen1, setIsOpen1, movies }) {
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+function ErrMsg({ errMsg }) {
+  return (
+    <p className="error">
+      <span>😰</span>
+      {errMsg}
+    </p>
+  );
+}
+
+function MoviesListBox({ isOpen1, setIsOpen1, movies, isLoading, error }) {
   return (
     <div className="box">
       <Button isOpen={isOpen1} setIsOpen={setIsOpen1} />
-      {isOpen1 && (
-        <ul className="list">
-          {movies?.map((movie) => (
-            <MoviesList movieObj={movie} key={movie.imdbID} />
-          ))}
-        </ul>
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <ErrMsg errMsg={error} />
+      ) : (
+        isOpen1 && (
+          <ul className="list list-movies">
+            {movies?.map((movie) => (
+              <MoviesList movieObj={movie} key={movie.imdbID} />
+            ))}
+          </ul>
+        )
       )}
     </div>
   );
