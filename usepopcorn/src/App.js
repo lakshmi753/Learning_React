@@ -58,8 +58,13 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
+  function handleSelectedId(id) {
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+  }
 
   useEffect(
     function () {
@@ -111,11 +116,13 @@ export default function App() {
           movies={movies}
           isLoading={isLoading}
           error={error}
+          onSelectedId={handleSelectedId}
         />
         <WatchedMovieListBox
           watched={watched}
           isOpen2={isOpen2}
           setIsOpen2={setIsOpen2}
+          selectedId={selectedId}
         />
       </main>
     </>
@@ -172,7 +179,14 @@ function ErrMsg({ errMsg }) {
   );
 }
 
-function MoviesListBox({ isOpen1, setIsOpen1, movies, isLoading, error }) {
+function MoviesListBox({
+  isOpen1,
+  setIsOpen1,
+  movies,
+  isLoading,
+  error,
+  onSelectedId,
+}) {
   return (
     <div className="box">
       <Button isOpen={isOpen1} setIsOpen={setIsOpen1} />
@@ -184,7 +198,11 @@ function MoviesListBox({ isOpen1, setIsOpen1, movies, isLoading, error }) {
         isOpen1 && (
           <ul className="list list-movies">
             {movies?.map((movie) => (
-              <MoviesList movieObj={movie} key={movie.imdbID} />
+              <MoviesList
+                movieObj={movie}
+                key={movie.imdbID}
+                onSelectedId={onSelectedId}
+              />
             ))}
           </ul>
         )
@@ -193,9 +211,9 @@ function MoviesListBox({ isOpen1, setIsOpen1, movies, isLoading, error }) {
   );
 }
 
-function MoviesList({ movieObj }) {
+function MoviesList({ movieObj, onSelectedId }) {
   return (
-    <li>
+    <li onClick={() => onSelectedId(movieObj.imdbID)}>
       <img src={movieObj.Poster} alt={`${movieObj.Title} poster`} />
       <h3>{movieObj.Title}</h3>
       <div>
@@ -208,19 +226,27 @@ function MoviesList({ movieObj }) {
   );
 }
 
-function WatchedMovieListBox({ watched, isOpen2, setIsOpen2 }) {
+function MovieDetails({ selectedId }) {
+  return <div className="details">{selectedId}</div>;
+}
+
+function WatchedMovieListBox({ watched, isOpen2, setIsOpen2, selectedId }) {
   return (
     <div className="box">
       <Button isOpen={isOpen2} setIsOpen={setIsOpen2} />
-      {isOpen2 && (
-        <>
-          <WatchedMovieSummary watched={watched} />
-          <ul className="list">
-            {watched.map((movie) => (
-              <WatchedMovieList movieObj={movie} key={movie.imdbID} />
-            ))}
-          </ul>
-        </>
+      {selectedId ? (
+        <MovieDetails selectedId={selectedId} />
+      ) : (
+        isOpen2 && (
+          <>
+            <WatchedMovieSummary watched={watched} />
+            <ul className="list">
+              {watched.map((movie) => (
+                <WatchedMovieList movieObj={movie} key={movie.imdbID} />
+              ))}
+            </ul>
+          </>
+        )
       )}
     </div>
   );
