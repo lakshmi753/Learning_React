@@ -227,7 +227,30 @@ function MoviesList({ movieObj, onSelectedId }) {
 }
 
 function MovieDetails({ selectedId }) {
-  return <div className="details">{selectedId}</div>;
+  const [isLoading, setIsLoading] = useState(false);
+
+  return (
+    <div className="details">
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back">&larr;</button>
+            <img alt="movie" />
+            <div className="details-overview">
+              <h2>movie</h2>
+              <p></p>
+              <p></p>
+              <p>
+                <span>⭐</span>
+              </p>
+            </div>
+          </header>
+        </>
+      )}
+    </div>
+  );
 }
 
 function WatchedMovieListBox({ watched, isOpen2, setIsOpen2, selectedId }) {
