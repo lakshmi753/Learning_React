@@ -228,6 +228,41 @@ function MoviesList({ movieObj, onSelectedId }) {
 
 function MovieDetails({ selectedId }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedMovieDetail, setSelectedMovieDetail] = useState({});
+
+  const {
+    Actors: actors,
+    Director: director,
+    Title: title,
+    Year: year,
+    Poster: poster,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Genre: genre,
+  } = selectedMovieDetail;
+
+  useEffect(
+    function () {
+      async function getMovieDetail() {
+        setIsLoading(true);
+
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        );
+
+        const data = await res.json();
+
+        //console.log(data);
+        setSelectedMovieDetail(data);
+        setIsLoading(false);
+      }
+
+      getMovieDetail();
+    },
+    [selectedId]
+  );
 
   return (
     <div className="details">
@@ -237,16 +272,29 @@ function MovieDetails({ selectedId }) {
         <>
           <header>
             <button className="btn-back">&larr;</button>
-            <img alt="movie" />
+            <img src={poster} alt={`Poster of ${title} movie`} />
             <div className="details-overview">
-              <h2>movie</h2>
-              <p></p>
-              <p></p>
+              <h2>
+                {title} {year}
+              </h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
               <p>
                 <span>⭐</span>
+                {imdbRating} IMDB-Rating
               </p>
             </div>
           </header>
+          <section>
+            <div className="rating"></div>
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director}</p>
+          </section>
         </>
       )}
     </div>
