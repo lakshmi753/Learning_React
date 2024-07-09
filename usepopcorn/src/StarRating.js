@@ -19,7 +19,7 @@ StarRating.propTypes = {
   color: PropTypes.string,
   className: PropTypes.string,
   message: PropTypes.array,
-  onSetExRating: PropTypes.func,
+  onSetRating: PropTypes.func,
 };
 
 export default function StarRating({
@@ -29,7 +29,7 @@ export default function StarRating({
   msg = [],
   defaultRating = 0,
   className = "",
-  onSetExRating,
+  onSetRating,
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
@@ -43,7 +43,7 @@ export default function StarRating({
 
   function handleRating(rate) {
     setRating(rate);
-    onSetExRating(rate);
+    onSetRating(rate);
   }
 
   return (

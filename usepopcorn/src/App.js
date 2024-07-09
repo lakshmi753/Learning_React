@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import StarRating from "./StarRating";
 
 /*const tempMovieData = [
   {
@@ -66,6 +67,14 @@ export default function App() {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
   }
 
+  function handleWatchedMovie(newMovie) {
+    setWatched((movie) => [...movie, newMovie]);
+  }
+
+  function handleCloseMovieDetail() {
+    setSelectedId(null);
+  }
+
   useEffect(
     function () {
       async function getMovieData() {
@@ -123,6 +132,8 @@ export default function App() {
           isOpen2={isOpen2}
           setIsOpen2={setIsOpen2}
           selectedId={selectedId}
+          onSetWatchedMovie={handleWatchedMovie}
+          onCloseMovieDetail={handleCloseMovieDetail}
         />
       </main>
     </>
@@ -226,9 +237,10 @@ function MoviesList({ movieObj, onSelectedId }) {
   );
 }
 
-function MovieDetails({ selectedId }) {
+function MovieDetails({ selectedId, onSetWatchedMovie, onCloseMovieDetail }) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMovieDetail, setSelectedMovieDetail] = useState({});
+  const [userRating, setUserRating] = useState(0);
 
   const {
     Actors: actors,
@@ -264,6 +276,22 @@ function MovieDetails({ selectedId }) {
     [selectedId]
   );
 
+  function handleAddWatchedMovie() {
+    const newMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+    };
+
+    onSetWatchedMovie(newMovie);
+
+    onCloseMovieDetail();
+  }
+
   return (
     <div className="details">
       {isLoading ? (
@@ -288,7 +316,18 @@ function MovieDetails({ selectedId }) {
             </div>
           </header>
           <section>
-            <div className="rating"></div>
+            <div className="rating">
+              <StarRating
+                maxRating={10}
+                size={22}
+                onSetRating={setUserRating}
+              />
+              {userRating > 0 && (
+                <button className="btn-add" onClick={handleAddWatchedMovie}>
+                  + Add movie to watchList
+                </button>
+              )}
+            </div>
             <p>
               <em>{plot}</em>
             </p>
@@ -301,12 +340,23 @@ function MovieDetails({ selectedId }) {
   );
 }
 
-function WatchedMovieListBox({ watched, isOpen2, setIsOpen2, selectedId }) {
+function WatchedMovieListBox({
+  watched,
+  isOpen2,
+  setIsOpen2,
+  selectedId,
+  onSetWatchedMovie,
+  onCloseMovieDetail,
+}) {
   return (
     <div className="box">
       <Button isOpen={isOpen2} setIsOpen={setIsOpen2} />
       {selectedId ? (
-        <MovieDetails selectedId={selectedId} />
+        <MovieDetails
+          selectedId={selectedId}
+          onSetWatchedMovie={onSetWatchedMovie}
+          onCloseMovieDetail={onCloseMovieDetail}
+        />
       ) : (
         isOpen2 && (
           <>
@@ -370,6 +420,7 @@ function WatchedMovieList({ movieObj }) {
           <span>⏳</span>
           <span>{movieObj.runtime} min</span>
         </p>
+        <button className="btn-delete">X</button>
       </div>
     </li>
   );
