@@ -362,15 +362,18 @@ function MovieDetails({
     [onCloseMovieDetail]
   );
 
-  useEffect(function () {
-    if (!title) return;
+  useEffect(
+    function () {
+      if (!title) return;
 
-    document.title = `Movie | ${title}`;
+      document.title = `Movie | ${title}`;
 
-    return function () {
-      document.title = "UsePopcorn";
-    };
-  }, []);
+      return function () {
+        document.title = "UsePopcorn";
+      };
+    },
+    [title]
+  );
 
   function handleAddWatchedMovie() {
     const newMovie = {
