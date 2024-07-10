@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 
 /*const tempMovieData = [
@@ -94,12 +94,16 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function getMovieData() {
         setIsLoading(true);
         setError("");
+
         try {
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok) {
@@ -116,13 +120,29 @@ export default function App() {
           setMovies(data.Search);
         } catch (error) {
           //console.log(error.message);
-          setError(error.message);
+
+          if (error.name !== "AbortError") {
+            console.log(error.message);
+            setError(error.message);
+          }
         } finally {
           setIsLoading(false);
         }
       }
 
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+
+      handleCloseMovieDetail();
+
       getMovieData();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -168,6 +188,28 @@ function Logo() {
 }
 
 function SearchInput({ query, setQuery }) {
+  const inputEl = useRef(null);
+
+  useEffect(
+    function () {
+      function handleFocus(e) {
+        if (document.activeElement === inputEl.current) return;
+
+        if (e.code === "Enter") {
+          inputEl.current.focus();
+          setQuery("");
+        }
+      }
+
+      document.addEventListener("keydown", handleFocus);
+
+      return function () {
+        document.removeEventListener("keydown", handleFocus);
+      };
+    },
+    [setQuery]
+  );
+
   return (
     <input
       className="search"
@@ -175,6 +217,7 @@ function SearchInput({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
@@ -302,6 +345,33 @@ function MovieDetails({
     [selectedId]
   );
 
+  useEffect(
+    function () {
+      function handleKeyPress(e) {
+        if (e.code === "Escape") {
+          onCloseMovieDetail();
+        }
+      }
+
+      document.addEventListener("keydown", handleKeyPress);
+
+      return function () {
+        document.removeEventListener("keydown", handleKeyPress);
+      };
+    },
+    [onCloseMovieDetail]
+  );
+
+  useEffect(function () {
+    if (!title) return;
+
+    document.title = `Movie | ${title}`;
+
+    return function () {
+      document.title = "UsePopcorn";
+    };
+  }, []);
+
   function handleAddWatchedMovie() {
     const newMovie = {
       imdbID: selectedId,
@@ -325,7 +395,9 @@ function MovieDetails({
       ) : (
         <>
           <header>
-            <button className="btn-back">&larr;</button>
+            <button className="btn-back" onClick={onCloseMovieDetail}>
+              &larr;
+            </button>
             <img src={poster} alt={`Poster of ${title} movie`} />
             <div className="details-overview">
               <h2>
