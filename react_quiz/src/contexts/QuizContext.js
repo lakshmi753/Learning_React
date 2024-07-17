@@ -1,0 +1,18 @@
+import { createContext, useContext } from "react";
+
+const QuizContext = createContext();
+
+function QuizProvider({ children }) {
+  return <QuizContext.Provider value={{}}>{children}</QuizContext.Provider>;
+}
+
+function useQuiz() {
+  const context = useContext(QuizContext);
+
+  if (context === undefined)
+    throw new Error("QuizContext is used outside the QuizProvider!");
+
+  return context;
+}
+
+export { QuizProvider, useQuiz };
