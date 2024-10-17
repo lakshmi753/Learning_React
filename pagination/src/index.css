@@ -1,6 +1,7 @@
 .product-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
   column-gap: 20px;
   row-gap: 20px;
   padding: 20px;
