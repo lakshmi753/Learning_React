@@ -66,8 +66,17 @@ function Error({ error }) {
 function Item({ itemObj }) {
   return (
     <div className="item-box">
-      <img alt={itemObj.title} src={itemObj.images} />
-      <p>{itemObj.title}</p>
+      <img alt={itemObj.title} src={itemObj.images} className="product-img" />
+      <p className="product-title">{itemObj.title}</p>
+    </div>
+  );
+}
+
+function Pagination() {
+  return (
+    <div>
+      <button>⏮️ Prev</button>
+      <button>Next ⏭️</button>
     </div>
   );
 }
