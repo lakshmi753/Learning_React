@@ -9,7 +9,7 @@ function App() {
     async function getProducts() {
       setIsLoading(true);
       try {
-        const res = await fetch(`https://dummyjson.com/products`);
+        const res = await fetch(`https://picsum.photos/v2/list?page=2&limit=5`);
 
         if (!res.ok) {
           throw new Error("Something went wrong! Please try again.");
@@ -21,8 +21,8 @@ function App() {
           throw new Error("Products not Available!!");
         }
 
-        console.log(data.products);
-        setProduct(data.products);
+        console.log(data);
+        setProduct(data);
       } catch (error) {
         //console.error(error.message);
         setError(error.message);
@@ -41,7 +41,14 @@ function App() {
       ) : error ? (
         <Error error={error} />
       ) : (
-        product.map((item) => <Item key={item.id} itemObj={item} />)
+        <>
+          <div className="item-box">
+            {product.map((item) => (
+              <Item key={item.id} itemObj={item} />
+            ))}
+          </div>
+          <Pagination />
+        </>
       )}
     </div>
   );
@@ -65,16 +72,17 @@ function Error({ error }) {
 
 function Item({ itemObj }) {
   return (
-    <div className="item-box">
-      <img alt={itemObj.title} src={itemObj.images} className="product-img" />
-      <p className="product-title">{itemObj.title}</p>
-    </div>
+    <img
+      alt={itemObj.author}
+      src={itemObj.download_url}
+      className="product-img"
+    />
   );
 }
 
 function Pagination() {
   return (
-    <div>
+    <div className="pagination-box">
       <button>⏮️ Prev</button>
       <button>Next ⏭️</button>
     </div>
@@ -82,3 +90,5 @@ function Pagination() {
 }
 
 export default App;
+
+//"https://picsum.photos/v2/list?page=1&limit=5";
