@@ -4,35 +4,57 @@ function App() {
   const [product, setProduct] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [pageNo, setPageNo] = useState(3);
 
-  useEffect(function () {
-    async function getProducts() {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`https://picsum.photos/v2/list?page=2&limit=5`);
+  const totalItems = 30;
+  const itemsPerPage = 5;
+  const totalPages = totalItems / itemsPerPage;
 
-        if (!res.ok) {
-          throw new Error("Something went wrong! Please try again.");
+  const prevTwoArr = Array.from({ length: 2 }, (_, i) => pageNo - i - 1)
+    .filter((el) => el >= 1)
+    .reverse();
+  //console.log(prevTwoArr);
+
+  const nextThreeArr = Array.from({ length: 3 }, (_, i) => pageNo + i).filter(
+    (el) => el <= totalPages
+  );
+  //console.log(nextThreeArr);
+
+  const paginationBtnArr = [...prevTwoArr, ...nextThreeArr];
+
+  useEffect(
+    function () {
+      async function getProducts() {
+        setIsLoading(true);
+        try {
+          const res = await fetch(
+            `https://picsum.photos/v2/list?page=${pageNo}&limit=5`
+          );
+
+          if (!res.ok) {
+            throw new Error("Something went wrong! Please try again.");
+          }
+
+          const data = await res.json();
+
+          if (!data) {
+            throw new Error("Products not Available!!");
+          }
+
+          //console.log(data);
+          setProduct(data);
+        } catch (error) {
+          //console.error(error.message);
+          setError(error.message);
+        } finally {
+          setIsLoading(false);
         }
-
-        const data = await res.json();
-
-        if (!data) {
-          throw new Error("Products not Available!!");
-        }
-
-        console.log(data);
-        setProduct(data);
-      } catch (error) {
-        //console.error(error.message);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
       }
-    }
 
-    getProducts();
-  }, []);
+      getProducts();
+    },
+    [pageNo]
+  );
 
   return (
     <div className="product-container">
@@ -47,7 +69,12 @@ function App() {
               <Item key={item.id} itemObj={item} />
             ))}
           </div>
-          <Pagination />
+          <Pagination
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+            totalPages={totalPages}
+            paginationBtnArr={paginationBtnArr}
+          />
         </>
       )}
     </div>
@@ -80,11 +107,36 @@ function Item({ itemObj }) {
   );
 }
 
-function Pagination() {
+function Pagination({ pageNo, setPageNo, totalPages, paginationBtnArr }) {
+  function handlePrevBtn() {
+    if (pageNo === 1) return;
+
+    setPageNo((pageNo) => pageNo - 1);
+  }
+
+  function handleNextBtn() {
+    if (pageNo === totalPages) return;
+
+    setPageNo((pageNo) => pageNo + 1);
+  }
+
   return (
     <div className="pagination-box">
-      <button>⏮️ Prev</button>
-      <button>Next ⏭️</button>
+      {pageNo > 1 && (
+        <button className="btn" onClick={handlePrevBtn}>
+          {"<"}
+        </button>
+      )}
+      {paginationBtnArr.map((el, i) => (
+        <button className={pageNo === el ? "btn active" : "btn"} key={el}>
+          {el}
+        </button>
+      ))}
+      {pageNo < totalPages && (
+        <button className="btn" onClick={handleNextBtn}>
+          {">"}
+        </button>
+      )}
     </div>
   );
 }
