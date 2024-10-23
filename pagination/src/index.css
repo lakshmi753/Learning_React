@@ -48,6 +48,11 @@
   color: white;
   border-radius: 6px;
   cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn:hover {
+  transform: scale(0.8);
 }
 
 .active {

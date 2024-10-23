@@ -4,7 +4,7 @@ function App() {
   const [product, setProduct] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(3);
+  const [pageNo, setPageNo] = useState(1);
 
   const totalItems = 30;
   const itemsPerPage = 5;
@@ -127,8 +127,12 @@ function Pagination({ pageNo, setPageNo, totalPages, paginationBtnArr }) {
           {"<"}
         </button>
       )}
-      {paginationBtnArr.map((el, i) => (
-        <button className={pageNo === el ? "btn active" : "btn"} key={el}>
+      {paginationBtnArr.map((el) => (
+        <button
+          className={pageNo === el ? "btn active" : "btn"}
+          key={el}
+          onClick={() => setPageNo(el)}
+        >
           {el}
         </button>
       ))}
