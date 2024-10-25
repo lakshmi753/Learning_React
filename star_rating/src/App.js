@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 
 function App() {
+  const [rating, setRating] = useState(0);
+  const [hoverRate, setHoverRate] = useState(0);
+
   return (
     <div>
       {new Array(10).fill(0).map((value, i) => (
-        <span key={i}>&#9734;</span>
+        <span
+          key={i}
+          className={`${
+            hoverRate ? (i < hoverRate ? "fill" : "") : i < rating ? "fill" : ""
+          } star`}
+          onClick={() => setRating(i + 1)}
+          onMouseEnter={() => setHoverRate(i + 1)}
+          onMouseLeave={() => setHoverRate(0)}
+        >
+          &#9733;
+        </span>
       ))}
     </div>
   );
