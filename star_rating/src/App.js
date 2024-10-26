@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import StarRating from "./StarRating";
 
 function App() {
   const [rating, setRating] = useState(0);
@@ -19,14 +20,20 @@ function App() {
           &#9733;
         </span>
       ))}
+      <StarRating
+        maxRating={5}
+        size={30}
+        msg={["Okay", "Good", "Nice", "Excellent", "Amazing"]}
+        color={"purple"}
+      />
     </div>
   );
 }
 
 export default App;
 
-/*&#9733;
-FULL STAR
+//Html Entities for Star : &#9733, &#9734 ;
+/*FULL STAR
 
 <svg
   xmlns="http://www.w3.org/2000/svg"
