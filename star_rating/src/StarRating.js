@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 const container = {
   display: "flex",
@@ -14,7 +15,15 @@ const starContainer = {
   gap: "2px",
 };
 
-function StarRating({ maxRating, color, size, msg }) {
+StarRating.propTypes = {
+  maxRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  msg: PropTypes.array,
+  onSetStarCount: PropTypes.func,
+};
+
+function StarRating({ maxRating, color, size, msg, onSetStarCount }) {
   const [tempRating, setTempRating] = useState("");
   const [rating, setRating] = useState("");
 
@@ -29,6 +38,7 @@ function StarRating({ maxRating, color, size, msg }) {
 
   function handleRate(i) {
     setRating(i + 1);
+    onSetStarCount(i + 1);
   }
 
   function hoverIn(i) {

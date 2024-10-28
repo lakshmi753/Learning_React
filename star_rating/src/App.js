@@ -4,6 +4,7 @@ import StarRating from "./StarRating";
 function App() {
   const [rating, setRating] = useState(0);
   const [hoverRate, setHoverRate] = useState(0);
+  const [starCount, setStarCount] = useState(0);
 
   return (
     <div>
@@ -21,11 +22,13 @@ function App() {
         </span>
       ))}
       <StarRating
-        maxRating={5}
+        maxRating={10}
         size={30}
         msg={["Okay", "Good", "Nice", "Excellent", "Amazing"]}
         color={"purple"}
+        onSetStarCount={setStarCount}
       />
+      <p>the rating is {starCount} stars.</p>
     </div>
   );
 }
