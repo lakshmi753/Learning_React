@@ -31,7 +31,18 @@ function App() {
           <Item key={item.id} itemObj={item} />
         ))}
       </div>
-      <div className="cartItem-box"></div>
+      <div className="cartItem-box">
+        <h2 className="cart-items">Cart Items</h2>
+        <h3 className="cart-item-qty">Total Quantity : X</h3>
+        <h3 className="cart-item-price">Total Price : X</h3>
+        <div className="cart-box">
+          <img alt="title" className="cart-item-img"></img>
+          <div className="cart-item-box">
+            <p className="item-name">Title</p>
+            <p className="item-price">Price</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -46,6 +57,8 @@ function Item({ itemObj }) {
           <b>{itemObj.price}</b>
         </span>
       </div>
+      <button className="add-btn btn">Add To Cart</button>
+      <button className="remove-btn btn">Remove from cart</button>
     </div>
   );
 }
